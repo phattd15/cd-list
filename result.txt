@@ -1,0 +1,81 @@
+diff --git a/album/views.py b/album/views.py
+index 307936c..443c7a9 100644
+--- a/album/views.py
++++ b/album/views.py
+@@ -3,10 +3,10 @@ from album.models import Albums
+ 
+ # Create your views here.
+ def index(request):
+-    albums = Albums.objects.all()
++    albums = Albums.objects.prefetch_related('artist').all()
+     return render(request, 'album/index.html', context=locals())
+ 
+ def detail(request, album_id):
+     album = Albums.objects.get(pk=album_id)
+-    tracks = album.tracks.all()
++    tracks = album.tracks.prefetch_related('genre').all()
+     return render(request, 'album/detail.html', context=locals())
+diff --git a/config/settings.py b/config/settings.py
+index 4ac7394..d21aead 100644
+--- a/config/settings.py
++++ b/config/settings.py
+@@ -122,3 +122,55 @@ STATIC_URL = 'static/'
+ # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+ 
+ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
++
++# LOGGING = {
++#     'version': 1,
++#     'disable_existing_loggers': True,
++#     'handlers': {
++#         'console': {
++#             'level': 'DEBUG',
++#             'class': 'logging.StreamHandler'
++#         },
++#     },
++#     'loggers': {
++#         'django': {
++#             'handlers': ['console'],
++#             'level': 'INFO'
++#         },
++#         'django.server': {
++#             'handlers': ['console'],
++#             'level': 'INFO',
++#             'propagate': False,
++#         },
++#         'django.db.backends': {
++#             'handlers': ['console'],
++#             'level': 'INFO',
++#             'propagate': False,
++#         }
++#     }
++# }
++
++LOGGING = {
++    'version': 1,
++    'disable_existing_loggers': False,
++    'handlers': {
++        'console': {
++            'class': 'logging.StreamHandler',
++        }
++    },
++    'loggers': {
++        'django.db.backends': {
++            'level': 'DEBUG',
++            'handlers': ['console'], 
++        },
++        'django': {
++            'handlers': ['console'],
++            'level': 'INFO'
++        },
++        'django.server': {
++            'handlers': ['console'],
++            'level': 'INFO',
++            'propagate': False,
++        },
++    }
++}
+\ No newline at end of file
+diff --git a/db.sqlite3 b/db.sqlite3
+index 75bf575..131bc04 100755
+Binary files a/db.sqlite3 and b/db.sqlite3 differ
